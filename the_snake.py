@@ -162,6 +162,7 @@ def handle_keys(game_object):
 
 def show_game_over():
     """Отображает сообщение 'Game Over' на экране"""
+    # Убрал данные в константы
     font = pygame.font.Font(None, GAME_OVER_FONT_SIZE)
     text = font.render('GAME OVER', True, GAME_OVER_COLOR)
     text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
