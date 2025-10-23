@@ -18,6 +18,8 @@ BOARD_BACKGROUND_COLOR = (0, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 0, 255)
+GAME_OVER_COLOR = (255, 156, 0)
+GAME_OVER_FONT_SIZE = 100
 SPEED = 17
 
 
@@ -33,9 +35,23 @@ class GameObject:
         self.position = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.body_color = None
 
+    def get_rect(self):
+        """Возвращает прямоугольник для отрисовки объекта."""
+        return pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+
+    def draw_cell(self, position=None, color=None):
+        """Отрисовывает одну ячейку объекта."""
+        if position is None:
+            position = self.position
+        if color is None:
+            color = self.body_color
+
+        rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
     def draw(self):
         """Абстрактный метод для отрисовки объектов."""
-        pass
 
 
 class Apple(GameObject):
@@ -115,13 +131,9 @@ class Snake(GameObject):
         """Отрисовывает змейку на экране, затирая след"""
         # Отрисовка всех сегментов змейки
         for position in self.positions:
-            rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-        # Затирание последнего сегмента
-        if self.last:
-            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            self.draw_cell(position, self.body_color)
+            last_rect = self.get_rect()
+            last_rect.topleft = self.last
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
     def update_direction(self):
@@ -150,8 +162,8 @@ def handle_keys(game_object):
 
 def show_game_over():
     """Отображает сообщение 'Game Over' на экране"""
-    font = pygame.font.Font(None, 100)
-    text = font.render('GAME OVER', True, (255, 156, 0))
+    font = pygame.font.Font(None, GAME_OVER_FONT_SIZE)
+    text = font.render('GAME OVER', True, GAME_OVER_COLOR)
     text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
     pygame.display.update()
