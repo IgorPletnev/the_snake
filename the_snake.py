@@ -52,6 +52,9 @@ class GameObject:
 
     def draw(self):
         """Абстрактный метод для отрисовки объектов."""
+        raise NotImplementedError(
+            'Метод draw должен быть переопределён в дочернем классе.'
+        )
 
 
 class Apple(GameObject):
@@ -70,10 +73,8 @@ class Apple(GameObject):
         )
 
     def draw(self):
-        """Отрисовывает яблоко"""
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        """Отрисовывает яблоко."""
+        self.draw_cell()
 
 
 class Snake(GameObject):
@@ -128,19 +129,14 @@ class Snake(GameObject):
         self.last = None
 
     def draw(self):
-        """Отрисовывает змейку на экране, затирая след"""
+        """Отрисовывает змейку на экране, затирая след."""
         # Отрисовка всех сегментов змейки
         for position in self.positions:
             self.draw_cell(position, self.body_color)
-            last_rect = self.get_rect()
-            last_rect.topleft = self.last
+        # Затираем хвост, если змейка двигалась
+        if self.last:
+            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
-
-    def update_direction(self):
-        """Обновляет направление движения змейки"""
-        if self.next_direction:
-            self.direction = self.next_direction
-            self.next_direction = None
 
 
 def handle_keys(game_object):
